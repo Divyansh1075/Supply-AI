@@ -1,0 +1,19 @@
+# Netlify deployment settings
+# Create this file as netlify.toml in your project root
+
+[build]
+  # Build command for the frontend
+  command = "cd Frontend && npm run build"
+  
+  # Directory to publish (frontend build output)
+  publish = "Frontend/dist"
+
+[build.environment]
+  # Node version
+  NODE_VERSION = "18"
+
+# Redirect all routes to index.html for React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
