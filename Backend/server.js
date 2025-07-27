@@ -24,7 +24,10 @@ const corsOptions = {
     'http://localhost:5174',    // Vite alternative port
     'http://127.0.0.1:3000',
     'http://127.0.0.1:5173',
-    'http://127.0.0.1:5174'
+    'http://127.0.0.1:5174',
+    'https://supply-ai-three.vercel.app', // Your Vercel domain
+    /.*\.vercel\.app$/,         // Any Vercel domain
+    /.*\.netlify\.app$/         // Any Netlify domain
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
