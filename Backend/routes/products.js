@@ -177,6 +177,127 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Update stock quantity
+router.patch('/:id/stock', async (req, res) => {
+  try {
+    const { quantity } = req.body;
+
+    if (quantity === undefined || quantity < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid quantity provided'
+      });
+    }
+
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found'
+      });
+    }
+
+    if (product.stockQuantity < quantity) {
+      return res.status(400).json({
+        success: false,
+        message: 'Insufficient stock available'
+      });
+    }
+
+    product.stockQuantity -= quantity;
+    await product.save();
+
+    res.json({
+      success: true,
+      message: 'Stock updated successfully',
+      data: product
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error updating stock',
+      error: error.message
+    });
+  }
+});
+
+// Process checkout and update stock for multiple items
+router.post('/checkout', async (req, res) => {
+  try {
+    const { items } = req.body; // Array of {productId, quantity}
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No items provided for checkout'
+      });
+    }
+
+    const results = [];
+    const errors = [];
+
+    // Process each item
+    for (const item of items) {
+      try {
+        const { productId, quantity } = item;
+
+        if (!productId || quantity === undefined || quantity <= 0) {
+          errors.push(`Invalid item data: ${JSON.stringify(item)}`);
+          continue;
+        }
+
+        const product = await Product.findById(productId);
+
+        if (!product) {
+          errors.push(`Product not found: ${productId}`);
+          continue;
+        }
+
+        if (product.stockQuantity < quantity) {
+          errors.push(`Insufficient stock for ${product.name}. Available: ${product.stockQuantity}, Requested: ${quantity}`);
+          continue;
+        }
+
+        product.stockQuantity -= quantity;
+        await product.save();
+
+        results.push({
+          productId,
+          productName: product.name,
+          quantityPurchased: quantity,
+          remainingStock: product.stockQuantity
+        });
+
+      } catch (error) {
+        errors.push(`Error processing ${item.productId}: ${error.message}`);
+      }
+    }
+
+    if (errors.length > 0 && results.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Checkout failed',
+        errors
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `Checkout completed. ${results.length} items processed successfully.`,
+      results,
+      errors: errors.length > 0 ? errors : undefined
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error processing checkout',
+      error: error.message
+    });
+  }
+});
+
 // Add product review
 router.post('/:id/reviews', async (req, res) => {
   try {

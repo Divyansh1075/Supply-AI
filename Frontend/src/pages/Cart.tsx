@@ -6,19 +6,56 @@ import { useCart } from '../context/CartContext';
 const Cart = () => {
   const { state, removeFromCart, updateWeight, clearCart } = useCart();
 
-  const handleWeightChange = (id: number, newWeight: number) => {
-    if (newWeight > 0) {
-      updateWeight(id, newWeight);
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity > 0) {
+      updateWeight(id, newQuantity);
     }
   };
 
-  const incrementWeight = (id: number, currentWeight: number) => {
-    handleWeightChange(id, currentWeight + 0.5);
+  const incrementQuantity = (id: string, currentQuantity: number) => {
+    handleQuantityChange(id, currentQuantity + 1);
   };
 
-  const decrementWeight = (id: number, currentWeight: number) => {
-    if (currentWeight > 0.5) {
-      handleWeightChange(id, currentWeight - 0.5);
+  const decrementQuantity = (id: string, currentQuantity: number) => {
+    if (currentQuantity > 1) {
+      handleQuantityChange(id, currentQuantity - 1);
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const checkoutItems = state.items.map(item => ({
+        productId: item.id,
+        quantity: item.quantity
+      }));
+
+      const response = await fetch('http://localhost:5000/api/products/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: checkoutItems }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Clear the cart after successful checkout
+        clearCart();
+        alert(`Checkout successful! ${data.results.length} items processed.`);
+        
+        if (data.errors && data.errors.length > 0) {
+          console.warn('Some items had issues:', data.errors);
+        }
+      } else {
+        alert(`Checkout failed: ${data.message}`);
+        if (data.errors) {
+          console.error('Checkout errors:', data.errors);
+        }
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('An error occurred during checkout. Please try again.');
     }
   };
 
@@ -53,7 +90,7 @@ const Cart = () => {
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">Shopping Cart</h1>
             <p className="text-gray-400">
-              {state.totalItems} kg of items in your cart
+              {state.totalItems} items in your cart
             </p>
           </div>
           <Link
@@ -102,31 +139,31 @@ const Cart = () => {
                           {item.name}
                         </h3>
                         <p className="text-gray-400 text-sm mb-2">
-                          ${item.pricePerKg.toFixed(2)} per kg
+                          ${item.price.toFixed(2)} per {item.unit}
                         </p>
                         <span className="inline-block px-2 py-1 bg-[#00E3FF]/20 text-[#00E3FF] text-xs rounded-full">
-                          {item.category}
+                          Qty: {item.quantity} {item.unit}
                         </span>
                       </div>
 
                       {/* Weight Controls */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() => decrementWeight(item.id, item.weight)}
+                          onClick={() => decrementQuantity(item.id, item.quantity)}
                           className="w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded-full flex items-center justify-center transition-colors"
-                          disabled={item.weight <= 0.5}
+                          disabled={item.quantity <= 1}
                         >
                           <Minus className="w-4 h-4 text-white" />
                         </button>
                         
                         <div className="text-center min-w-[80px]">
                           <div className="text-white font-semibold">
-                            {item.weight} kg
+                            {item.quantity} {item.unit}
                           </div>
                         </div>
                         
                         <button
-                          onClick={() => incrementWeight(item.id, item.weight)}
+                          onClick={() => incrementQuantity(item.id, item.quantity)}
                           className="w-8 h-8 bg-gray-600 hover:bg-gray-500 rounded-full flex items-center justify-center transition-colors"
                         >
                           <Plus className="w-4 h-4 text-white" />
@@ -186,7 +223,10 @@ const Cart = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] text-[#0B1222] py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity transform hover:scale-105">
+              <button 
+                onClick={handleCheckout}
+                className="w-full bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] text-[#0B1222] py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity transform hover:scale-105"
+              >
                 Proceed to Checkout
               </button>
 
