@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -36,6 +37,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchProducts();
+    setIsVisible(true);
   }, []);
 
   const fetchProducts = async () => {
@@ -147,23 +149,31 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0B1222] to-[#1e3a8a] py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#0B1222] to-[#1e3a8a] py-8 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 right-20 w-64 h-64 bg-gradient-to-r from-[#00E3FF]/30 to-[#2ED47A]/30 rounded-full blur-3xl animate-float-slow"></div>
+        <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-r from-[#2ED47A]/20 to-[#00E3FF]/20 rounded-full blur-3xl animate-pulse-slow"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className={`text-center mb-12 transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           <h1 className="text-4xl font-bold text-white mb-4">
-            Supplier Dashboard
+            <span className="bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] bg-clip-text text-transparent animate-gradient">
+              Supplier Dashboard
+            </span>
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-            Manage your products and inventory
+            Manage your products and inventory with powerful tools
           </p>
         </div>
 
         {/* Supplier Actions */}
-        <div className="mb-8">
+        <div className={`mb-8 transition-all duration-1000 delay-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] text-[#0B1222] px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center space-x-2"
+            className="bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] text-[#0B1222] px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 flex items-center space-x-2 transform hover:scale-105 animate-pulse-glow"
           >
             <Plus className="w-5 h-5" />
             <span>Add New Product</span>
@@ -172,8 +182,11 @@ const Dashboard = () => {
 
         {/* Add Product Form */}
         {showAddForm && (
-          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 mb-8">
-            <h3 className="text-xl font-semibold text-white mb-6">Add New Product</h3>
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-6 mb-8 animate-fade-in-up hover-lift">
+            <h3 className="text-xl font-semibold text-white mb-6 flex items-center space-x-2">
+              <Plus className="w-5 h-5 text-[#00E3FF]" />
+              <span>Add New Product</span>
+            </h3>
             <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">Product Name</label>
@@ -290,11 +303,22 @@ const Dashboard = () => {
 
         {/* Products Grid */}
         {loading ? (
-          <div className="text-center text-white">Loading products...</div>
+          <div className="text-center text-white">
+            <div className="inline-flex items-center space-x-2">
+              <div className="w-4 h-4 bg-[#00E3FF] rounded-full animate-bounce"></div>
+              <div className="w-4 h-4 bg-[#2ED47A] rounded-full animate-bounce animation-delay-200"></div>
+              <div className="w-4 h-4 bg-[#00E3FF] rounded-full animate-bounce animation-delay-500"></div>
+              <span className="text-lg ml-4">Loading products...</span>
+            </div>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <div key={product._id} className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden hover:border-[#00E3FF]/50 transition-all duration-300">
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-1000 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            {products.map((product, index) => (
+              <div 
+                key={product._id} 
+                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl overflow-hidden hover:border-[#00E3FF]/50 transition-all duration-300 animate-fade-in-up hover-lift"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
                 <div className="relative h-48 overflow-hidden">
                   <img
                     src={product.image || 'https://via.placeholder.com/300x200?text=No+Image'}
