@@ -43,7 +43,8 @@ const Dashboard = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/products');
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://supply-ai-backend.onrender.com';
+      const response = await fetch(`${API_BASE_URL}/api/products`);
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products || []);
@@ -65,7 +66,8 @@ const Dashboard = () => {
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/products', {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://supply-ai-backend.onrender.com';
+      const response = await fetch(`${API_BASE_URL}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +111,8 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://supply-ai-backend.onrender.com';
+      const response = await fetch(`${API_BASE_URL}/api/products/${productId}`, {
         method: 'DELETE',
       });
 

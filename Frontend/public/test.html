@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    <button onclick="testSignup()">Test Signup</button>
+    <button onclick="testProducts()">Test Products</button>
+    <div id="result"></div>
+
+    <script>
+        const API_BASE_URL = 'https://supply-ai-backend.onrender.com';
+        
+        async function testSignup() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        firstName: 'Test',
+                        lastName: 'User2',
+                        email: 'test2@example.com',
+                        password: 'password123',
+                        userType: 'buyer'
+                    }),
+                });
+                const data = await response.json();
+                document.getElementById('result').innerHTML = 'Signup: ' + JSON.stringify(data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Signup Error: ' + error.message;
+            }
+        }
+        
+        async function testProducts() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/products`);
+                const data = await response.json();
+                document.getElementById('result').innerHTML = 'Products: ' + JSON.stringify(data.products ? data.products.length + ' products found' : data);
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Products Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

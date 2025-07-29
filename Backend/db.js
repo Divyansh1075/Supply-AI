@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 // MongoDB connection string
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://divyanshchauhan1075:Divyansh_195047@cluster0.ankipns.mongodb.net/';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://divyanshchauhan1075:Divyansh_195047@cluster0.ankipns.mongodb.net/supplyai';
 
 // Connect to MongoDB
 const connectDB = async () => {

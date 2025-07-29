@@ -44,7 +44,8 @@ const Catalog = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/products');
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://supply-ai-backend.onrender.com';
+      const response = await fetch(`${API_BASE_URL}/api/products`);
       if (response.ok) {
         const data = await response.json();
         setProducts(data.products || []);

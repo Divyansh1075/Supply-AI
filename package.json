@@ -1,0 +1,25 @@
+{
+  "name": "supplyai-fullstack",
+  "version": "1.0.0",
+  "description": "SupplyAI Full Stack Application",
+  "main": "Backend/server.js",
+  "scripts": {
+    "install-backend": "cd Backend && npm install",
+    "install-frontend": "cd Frontend && npm install",
+    "build": "cd Backend && npm install",
+    "start": "cd Backend && npm start",
+    "dev": "cd Backend && npm run dev"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "react",
+    "mongodb",
+    "supplychain"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

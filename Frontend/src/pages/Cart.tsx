@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const Cart = () => {
   const { state, removeFromCart, updateWeight, clearCart } = useCart();
+  const [loading, setLoading] = useState(false);
 
   const handleQuantityChange = (id: string, newQuantity: number) => {
     if (newQuantity > 0) {
@@ -24,17 +25,19 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     try {
-      const checkoutItems = state.items.map(item => ({
-        productId: item.id,
-        quantity: item.quantity
-      }));
-
-      const response = await fetch('http://localhost:5000/api/products/checkout', {
+      setLoading(true);
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://supply-ai-backend.onrender.com';
+      const response = await fetch(`${API_BASE_URL}/api/products/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ items: checkoutItems }),
+        body: JSON.stringify({
+          items: state.items.map(item => ({
+            productId: item.id,
+            quantity: item.quantity
+          }))
+        }),
       });
 
       const data = await response.json();
@@ -56,6 +59,8 @@ const Cart = () => {
     } catch (error) {
       console.error('Error during checkout:', error);
       alert('An error occurred during checkout. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -225,9 +230,10 @@ const Cart = () => {
 
               <button 
                 onClick={handleCheckout}
-                className="w-full bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] text-[#0B1222] py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity transform hover:scale-105"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] text-[#0B1222] py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-opacity transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Proceed to Checkout
+                {loading ? 'Processing...' : 'Proceed to Checkout'}
               </button>
 
               <div className="mt-4 text-center">
