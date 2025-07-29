@@ -8,7 +8,8 @@ const Home = () => {
   const [currentWord, setCurrentWord] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   
-  const words = ['Suppliers', 'Partners', 'Solutions', 'Innovation'];
+  // Fixed spelling and improved words
+  const words = ['Suppliers', 'Partners', 'Solutions', 'Innovation', 'Excellence'];
   const fullText = 'Find the Perfect ';
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const Home = () => {
         } else {
           clearInterval(typeInterval);
           
+          // Longer pause before deleting
           setTimeout(() => {
             const deleteInterval = setInterval(() => {
               if (charIndex > 0) {
@@ -34,10 +36,10 @@ const Home = () => {
                 clearInterval(deleteInterval);
                 setCurrentWord((prev) => (prev + 1) % words.length);
               }
-            }, 100);
-          }, 2000);
+            }, 80); // Smoother deletion
+          }, 2500); // Longer display time
         }
-      }, 150);
+      }, 120); // Smoother typing
     };
 
     const timeout = setTimeout(typeWriter, 1000);
@@ -57,7 +59,7 @@ const Home = () => {
     },
     {
       icon: <Zap className="w-6 h-6 text-[#0B1222]" />,
-      title: "Real-time Insights",
+      title: "Real-Time Insights",
       description: "Access comprehensive market data, supplier performance metrics, and trend analysis to make informed procurement decisions instantly."
     }
   ];
@@ -107,11 +109,13 @@ const Home = () => {
         <div className="max-w-7xl mx-auto text-center relative z-10">
           {/* Animated Title */}
           <div className={`transition-all duration-2000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 relative">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 relative leading-tight">
               <span className="bg-gradient-to-r from-[#00E3FF] to-[#2ED47A] bg-clip-text text-transparent animate-gradient">
                 {fullText}
-                <span className="inline-block border-r-2 border-[#00E3FF] animate-blink">
-                  {typedText}
+                <span className="inline-block min-w-[200px] text-left">
+                  <span className="border-r-2 border-[#00E3FF] animate-blink">
+                    {typedText}
+                  </span>
                 </span>
               </span>
               <br />
@@ -127,7 +131,7 @@ const Home = () => {
           <div className={`flex flex-col sm:flex-row gap-4 justify-center mb-20 transition-all duration-1000 delay-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
             <Link
               to="/catalog"
-              className="bg-[#00E3FF] text-[#0B1222] px-8 py-4 rounded-xl font-semibold text-lg hover:bg-[#00E3FF]/90 transition-all transform hover:scale-110 hover:shadow-2xl hover:shadow-[#00E3FF]/25 animate-pulse-glow"
+              className="bg-[#00E3FF] text-[#0B1222] px-8 py-4 rounded-xl font-semibold text-lg hover:bg-[#00E3FF]/90 transition-all transform hover:scale-105 hover:shadow-2xl hover:shadow-[#00E3FF]/25 animate-pulse-glow"
             >
               Explore Suppliers
             </Link>
